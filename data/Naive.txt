@@ -1,0 +1,190 @@
+
+NAIVE BAYES CLASSIFICATION
+Every machine learning model internally uses an algorithm to analyze and understand the given data set. Similar to Logisitic Regresison that classify the data into several classes or groups, we have another classifier called 'Naive Bayes Clasification Model'. This model is useful to classify the given data and finally provide 'Yes' or 'No' type of output. Depending on the given input data (or independent variables), this model calculates how much probability is there for 'Yes' and how much for 'No'. When 'Yes' has more probability. it gives 'Yes' as output, otherwise it gives 'No',
+
+Naive Bayes Model works based on Bayes theorem along with Naive assumption.The Naive Bayes classifier model is dependent on probabilities. For example - it gives the final result in the form of probabilities from the independent variables. For example, we arrived at 80% probability for 'Yes' and 20% probability for 'No' That means the final result is shown as 'Yes' since it has more possibility.
+
+Types of Naive Bayes Model
+Depending on how the data is distributed, the Naive Bayes model will differ. There are 2 types of Naive Bayes classifiers :
+1. Gaussian Naive Bayes classifier
+	In Gaussian Naive Bayes, continous values associated with each feature are assumed to be distributed according to Gaussian distributiion.
+
+2. Multinomial Naive Bayes classifier
+	Here we do not have continous values
+
+DataSet : cricket.csv
+This dataset has 14 rows and 4 feature columns by the names : OUTLOOK, TEMPERATURE, HUMIDITY and WINDY. The target column is PLAY CRICKET. This column gives 'Yes' or 'No' to play cricket depending on the weather conditions mentioned in the feature columns. Let us apply Gaussian Naive Bayes on the data set and find out how the weather is influencing playing cricket.
+
+The 4 feature columns in the dataset contain categorical data. For example, take OUTLOOK column, it contains 3 types of values namly Rainy,Overcast and Sunny.  All the 14 rows in this column has these 3 types(or categories). The machine learning model will not work directly on categorical values. They work only on numeric type of data. Hence we have to convert these categorical values into numeric type of data. Hence we have to convert these categorical values into numeric type of data. For this purpose, we can use methods like dummy variables method etc. Here we are going to write our own functions to convert the text data into numeric. For exmple, Rainy can be represented as 0, Overcast can be represented as 1 and Sunny can be shown by 2 in our function. 
+
+def outlook_to_numeric(x):
+	if x=='Rainy':
+		return 0
+	if x=='Overcast':
+		return 1
+	if x=='Sunny':
+		return 2
+The preceding outlook_to_numeric() function should be applied on the actual outlook column using apply() method as:
+	df['outlook']=df['outlook'].apply(outlook_to_numeric)
+In this manner, we can write our own functions to convert all the columns of the dataset into numeric type of columns. The following functions can be written as:
+def temp_to_numeric(x):
+def humid_to_numeric(x):
+def windy_to_numeric(x):
+def target_to_numeric(x):
+
+When we apply these functions on the dataframe, we would convert all the columns to hold numeric data.
+
+OUTLOOK
+ Rainy -->0, Overcast --> 1, Sunny --> 2
+
+TEMPERATURE
+ Hot --> 0, Mild --> 1, Cool --> 2
+
+HUMIDITY
+High --> 0, Normal --> 1
+
+PLAY CRICKET
+No --> 0, Yes --> 1
+
+NOw, let us represent the independent variables by x and target variable by y as:
+x=df[['OUTLOOK','TEMPERATURE','HUMIDITY','WINDY']]
+y=df['PLAY_CRICKET']
+
+Please observe that x should be 2D array and y should be 1D array. That is how the machine learning model is designed.
+Now we can split the x and y data into train and test rows as:
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=10)
+
+First 30% of rows will be selected randomly for test data and the remaining rows (70%)  willbe left for train data. The random_state=10 indicates a random seed number( i.e. 10 )based on which internally random numbers are generated. Depending on these random numbers, the selection of test rows will be done. Suppose the random numbers generated are 1,3,5,6 then the rows numbered as 1,3,5,6 selected as test data.
+
+Once the data is split into train and test data, we have to apply Gaussian Naive Bayes Machine  Learning Model on that data. For this purpose we should use GaussianNB class. First we create an object to GaussianNB class and then train the model by calling fit() method on the object as :
+ from sklearn.naive_bayes import GaussianNB
+ gnb=GaussianNB()
+ gnb.fit(x_train,y_train) # train the model
+ 
+We can make predictions on test data by calling predict method of the model as :
+y_pred=gnb.predict(x_test)
+
+BY comparing the predicted values 'y_pred'  with the original values in the dataset 'y_test'. We can understand the efficiency of the model. Let us call accuracy_model() method of the metrics module for knowing the accuracy as :
+from sklearn import metrics
+score=metrics.accuracy_score(y_test,y_pred)
+print('Accuracy : {}'.format(score))
+
+We can also know the score of the model by calling score() method on the model object and comparing x_test with y_test as :
+ gnb.score(x_test,y_test)
+
+We can make predictions on the new data using predict() method. For example, let us predict if we can play cricket or not on a day with Sunny outlook(2), Cool temperature(2), Normal humidity(1) and no winds(0). Supply these values in the form of 2D array to predict method as :
+ gnb.predict([[2,2,2,0]])
+If the output is 1 means we can play cricket in this weather. 
+For example, Sunny outlook(2), Mild temperature(1), High humidity(0) and Windy day(1). Supply these value to the predict method as :
+	gnb.predict([[2,1,0,1]])
+The result 0 indicates 'No' that means we cannot play cricket in these weather conditions.
+
+REQ: We are given weather data related to outlook, temperature, humidity and windy. Analyze the data using Gaussian Naive Bayes classifier and predict whether cricket can be played or not based on given new data.
+
+# Gaussian Naive Bayes classifier
+# import the libraries
+import pandas as pd
+
+
+# load the cricket dataset
+df=pd.read_csv(r'E:\BetaLab\July18\cricket.csv')
+df.head()
+
+
+# Convert the data into numeric by writting our own functions
+
+def outlook_to_numeric(x):
+    if x=='Rainy':
+        return 0
+    if x=='Overcast':
+        return 1
+    if x=='Sunny':
+        return 2
+
+def temp_to_numeric(x):
+    if x=='Hot':
+        return 0
+    if x=='Mild':
+        return 1
+    if x=='Cool':
+        return 2
+
+def humid_to_numeric(x):
+    if x=='High':
+        return 0
+    if x=='Normal':
+        return 1
+
+def windy_to_numeric(x):
+    if x==False:
+        return 0
+    if x==True:
+        return 1
+
+def target_to_numeric(x):
+    if x=='No':
+        return 0
+    if x=='Yes':
+        return 1
+
+# apply the above functions on the cols and store them into df
+df['OUTLOOK']=df['OUTLOOK'].apply(outlook_to_numeric)
+df['TEMPERATURE']=df['TEMPERATURE'].apply(temp_to_numeric)
+df['HUMIDITY']=df['HUMIDITY'].apply(humid_to_numeric)
+df['WINDY']=df['WINDY'].apply(windy_to_numeric)
+df['PLAY CRICKET']=df['PLAY CRICKET'].apply(target_to_numeric)
+df.head()
+
+# take x and y
+x=df[['OUTLOOK','TEMPERATURE','HUMIDITY','WINDY']]
+x
+
+y=df['PLAY CRICKET']
+y
+
+
+# splitting x and y into training and testing sets
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=10)
+
+
+# training the model on training set
+from sklearn.naive_bayes import GaussianNB
+gnb=GaussianNB()
+gnb.fit(x_train,y_train)
+
+
+# Make the predictions on testing set
+Y_pred=gnb.predict(x_test)
+Y_pred
+
+
+# comparing actual response values (y_test) with predicted response values(y_pred)
+from sklearn import metrics
+score=metrics.accuracy_score(y_test,Y_pred)
+print('Accutacy :',score)
+
+
+# another way to find score
+gnb.score(x_test,y_test)
+
+
+# make predictions with new data
+# Sunny outlook, Cool temperature, Normal Humidity, No Wind
+gnb.predict([[2,2,2,0]])
+
+
+# Sunny outlook,Mild temperature, High Humidity, windy day
+gnb.predict([[2,1,0,1]])
+
+
+
+
+
+
+
+
+
+
+

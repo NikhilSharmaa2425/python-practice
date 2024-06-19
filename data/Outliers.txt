@@ -1,0 +1,213 @@
+Outliers
+--------
+When data is collected, there are chances of some abnormal values creeping into data. For example, we are collecting the heights of 7 students in 10th class. The values are given in foot as :
+	5.2, 5.4, 5.0, 5.2, 7.0, 5.3, 5.1
+If we observe this dataset, the value 7.0 seems to be abnormal as it is most likely not possible for a student in 10th class having the height of 7.0 foot. This is due to mistake done by the typist when entering the data. He would have entered the value 7.0 while actually he had to type 5.0. So, this value i.e. 7.0 is called an outlier.
+
+The problem with the outlier is that modify the final results or conclusions drawn from the data. For example, if we have to find out the average height of 10th class students based on the data, we will have a lot of difference in the average height with and without the outliers
+	With outlier						Without outier
+								(Outlier removed)
+
+  5.2, 5.4, 5.0, 5.2, 7.0, 5.3, 5.1			    5.2, 5.4, 5.0, 5.2, 5.3, 5.1
+  Average =38.2/7					    Average =31.2/6
+	  =5.46                                                     =5.2
+
+With outliers, we feel that 10th class students in that school are tall having 5.5 foot height. But this is not correct. The truth is that the 10th class students average height is only 5.2 foot. That means they are not tall. In this manner, the conclusion will not be accurate due to the presence of outliers in the data.
+Outiers are observations(or datapoints) that are distant or abnormal from other observations. Generally, outliers can be very low or very high values. Outliers can modify the final results. Hence the results may not be accurate. We have to handle the outliers to  get accurate results.
+
+Detecting the outliers
+In a given dataset, we want to detect the outliers is only 1 column at a time. This is also called 'Univariate analysis'. The major ways to detect the outliers:
+1. Sorting the data
+2. Drawings graphs/plots
+3. Inter Quartile Range(IQR)
+
+DataSet : Solid_Waste_Generation_Recycling
+The dataset contains data related to solid waste generated in a state in USA for 15 years starting from 2000 to 2014. Data about the wastes from agriculture, used Aluminum Cans, Anti-freeze material, Appliances/White goods, Ash Sand & Dust sand in Asphalt Production, Asphalt/Concrete waste etc are available in this dataset. This dataset has 15 rows and 80 columns
+
+Detecting the outliers
+In the given dataset, we want to detect the outliers in only 1 column at a time. This is also called 'Univariate analysis'. There are three major ways to detect the outliers:
+1. Sorting the data
+2. Drawings graphs/plots
+3. Inter Quartile Range(IQR) method
+
+Sorting the data
+The outliers contain values that are very low or very high. This is the reason they are called abnormal values. When we sort the data into ascending order, we can have data starting from low values to high values. If the outliers are very low values, then they can be seen in the beginning of the sorted data. If the outliers are very high values, they can be seen at the end of the sorted data. This clue help us to sense the outliers.
+
+Suppose, we want to find the outliers in the column name : 'Aluminum Cans', we have to first sort the dataset on that column as:
+	df=data.sort_values('Aluminum Cans')
+	df['Aluminum Cans'].head()
+	df['Aluminum Cans'].tail()
+
+Conclusion : The difference between the last row and the previous row, it is 21098-17944=3154. This is abnormal difference. Hence the last value 21098 with index number 9 means the 10th row is outlier.
+
+Drawing Graphs/Plots
+Drawings various graphs and plots will help us to detect the outliers by their visual examination. When compared to the remianing data, the outliers are represented as seperate datapoints which would be distant from the others. For example, the outliers are displayed using 3 three different types of graphs. In the Box plot, the outliers can be shown either or below the box. In the Histogram, the outliers are displayed as bars far away from other bars. In the scatter plot, the outliers willbe seen as datapoints away from the group of other points.
+
+To find outliers in the 'Aluminum Cans' column, we can draw a box plot using boxplot() function of seaborn module as:
+ sns.boxplot(data=data,x='Aluminum Cans')
+Conclusion : In the above plot, the datapoint away from the box plot(at the right side). So we can understand the outlier is at around 21000
+
+Let us now display a distribution plot using displot() function of seaborn module as
+	sns.displot(data=data,x='Aluminum Cans',bins=10)
+
+Conclusion : A distribution plot shows bars by default. When we observe the bars, we can understand an isolated bar at around the value 21000. This is the outlier
+
+Inter Quartile Range(IQR) Method
+Inter Quartile Range or IQR represents the range of values between 75th and 25th percentiles. We can divide the total data into 4 parts or 4 quartiles as : 25th percentile(Q1), 50th percentile(Q2), 75th percentile(Q3), and 100th percentile(Q4). The difference between Q3 and Q1 is called IQR. So
+	IQR = Q3-Q1
+
+Python offers a method quantile() to calculate quartiles(or percentiles). We have to pass the percentile value to this method. For example, to calculate 3rd quartile or 75th percentile, we can use quantile(0.75) as :
+	q3=data['Aluminum Cans'].quantile(0.75)
+Similarly, to calculate 1st quartile or 25th percentile, we can use quantile(0.25) as 
+	q1=data['Aluminum Cans'].quantile(0.25)
+We can find IQR value by substracting q1 from q3 as 
+	IQR = q3-q1
+
+This iqr value helps us to find the valid upper and lower limits in the dataset. The valid upper limit is q3+one and half times of iqr. That means
+	ul=q3+(1.5*iqr)
+The valid lower limit is q1-one and half times of iqr. That means
+	ll=q1-(1.5*iqr)
+Using the above formula, we can calculate the upper and lower limits. Any value above the upper limit or below the lower limit are considerd as outliers
+	print(ul,ll)
+
+How to handle outliers
+When we found outliers in the dataset, we have to either delete them or replace them with some reasonable value. When the dataset contains huge number of rows, it is better to delete the outliers. When the dataset contains less number of rows, deleting the outliers will affect the results as the number of available rows after deletion will become still lesser.
+
+Let us first see how to delete the outliers from the dataset. We have to delete the rows with value above ul and below ll. This can be dome by using numpy's where() function that returns array of indexes.
+
+To find the upper bound values that are above ul, we can write
+	upper=np.where(data['Aluminum Cans']>=ul)
+To find the lower bound values that are below ll, we can write
+	lower=np.where(data['Aluminum Cans']<=ll
+The 'upper'and 'lower' represent 1D arrays with index number of rows to be deleted. We can observe 'upper' contains index value 14. That means 14th row contains outlier that need to be deleted. Now, to delete these rows, we can use drop() function
+	data.drop(upper[0],inplace=True)
+	data.drop(lower[0],inplace=True)
+Now this 'data' is the remaining dataset after removing the rows with outliers. If we observe the dataset, we will not find the 14th row.
+
+In some cases, especially, when there are less number of rows , it is not good idea to remove the rows. In such cases, it is better to replace the outliers with reasonable values. Generally, the outliers are replaced by the mean or median value of the other values in the column. We know that the numpy module has functions mean() and median() to calculate mean and median values. Suppose, we want to calculate the median value, we can use median() function as:
+	First of all , we will convert the 'Aluminum Cans' values into an array using .values attribute as:
+	arr=data['Aluminum Cans'].values
+All these values of 'arr' should be between the lower and upper limits. Such values are marked as True. Remaining values are marked as False(they are outliers)
+	true_index=(ll < arr) & (arr < ul)
+We can observe that there is one False value in the array at 9th position that is the outlier. To replace this row with median value, let us find median value of all True values as :
+	mid=np.median(data['Aluminum Cans'][true_index])
+We know that outliers are represented by False. To replace the outliers with median value, we have to replace false_index values with median value as:
+	false_index=~true_index
+	data['Aluminium Cans'].values[false_index]=mid
+	data
+Thus, we can make the 'Aluminium Cans' column free of outliers in the data frame.
+
+Example: Find the outliers in the 'Aluminium Cans' column in the solid waste generation dataset and show how to handle the outliers.
+
+# outlier detection and handling
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+
+#read data from the dataset into the dataframe
+data=pd.read_csv(r'E:\BetaLab\Outliers\Solid_Waste_Generation___Recycling.csv')
+data.head()
+
+
+# letus keep original data into df1 for later use
+df1=data
+
+
+# find out the number of rows and cols in the data frame
+data.shape
+
+
+# outliers can be detected in 3 ways 1. sorting 2. visual representation 3. IQR(Inter Quartile Range)
+
+
+# find out the number of rows and cols in the data frame
+data.shape
+
+# outliers can be detected in 3 ways 1. sorting 2. visual representation 3. IQR(Inter Quartile Range)
+
+# Let us find outliers in Aluminium Cans by sorting that column
+df=data.sort_values('Aluminum Cans')
+
+# display the first five rows
+df['Aluminum Cans'].head()
+
+# display the last five rows
+df['Aluminum Cans'].tail()
+
+
+# letus find out;iers by drawings graphs /plots
+# from the below plot, the outlier at around 21000
+sns.boxplot(data=data,x='Aluminum Cans')
+
+
+# show distribution plot
+# from the below plot the outlier is at around 21000
+sns.displot(data=data,x='Aluminum Cans',bins=10)
+
+
+# calculate IQR
+# first calculate q3(third quartile)
+q3=data['Aluminum Cans'].quantile(0.75)
+q3
+
+
+# calculate q1(First quartile)
+q1=data['Aluminum Cans'].quantile(0.25)
+q1
+
+
+# find iqr value
+iqr=q3-q1
+iqr
+
+
+# Now calculate upper and lower limits from iqr
+# any value above ul or below ll will become outliers
+ul=q3+(1.5*iqr)
+ll=q1-(1.5*iqr)
+print(ul,ll)
+
+
+# upper bound
+upper=np.where(data['Aluminum Cans']>=ul)
+lower=np.where(data['Aluminum Cans']<=ll)
+# delete the rows above upper and below lower values
+data.drop(upper[0],inplace=True)
+data.drop(lower[0],inplace=True)
+
+
+# how many rows removed -> 1 row removed
+data.shape
+
+
+#let us replace the outliers with a value
+# first convert the Aluminum Cans values into an array
+arr=df1['Aluminum Cans'].values
+
+
+# if arr values are in between ll and ul, represent the vaues as Trie else False
+# False values are outliers
+true_index=(ll<arr) & (arr<ul)
+true_index
+
+
+# so calculate median of all values other than the outliers
+mid=np.median(df1['Aluminum Cans'][true_index])
+mid
+
+
+# replace all outliers with median value i.e false_index values to be replace
+false_index=~true_index
+df1['Aluminum Cans'].values[false_index]=mid
+df1
+
+
+
+
+
+
+
+
+
+  

@@ -1,0 +1,74 @@
+
+Dataset : titanic.csv
+The dataset titanic.csv contains Passenger number,Survived or not, Passenger class, Passeneger name, Sex, age,Siblings and Spouse, Ticket number, Embarked(the port where the Passenger entered into the ship) etc. This dataset contains a total of 891 rows. We used to supposed to do the following things as a part of this task:
+- Load the titanic dataset
+- Display first 5 rows and last 5 rows
+- Display no of rows and cols in the dataset
+- Display the no of rows where age values in the 'Age' column are missing
+- Display the no of passengers survived
+- Display the no of people dead
+- Drop the rows where 'Age' column does not have any value
+- Display the names and ages of survived people
+- Display data frame with only numeric datatypes.
+- Draw distribution plot on 'Age'
+- Display count plot with categorical variable 'survived' values. Display the males and females survived. Prove that more females are survived than males
+- Display count plot on survived people in 'Pclass'. Prove that more first class people are survived then the other classes(2nd and 3rd classes)
+
+Ans
+
+# import the libraries
+import seaborn as sns
+import pandas as pd
+
+# import the titanic dataset
+df=pd.read_csv('E:\\BetaLab\\day 9\\titanic.csv')
+
+# show how many rows and cols in the dataset
+print(df.shape)
+
+# dataset information
+df.info()
+
+# display top 5 and last 5 rows
+df.head()
+df.ta1il()
+
+# find the no of missing values column wise
+df.isnull().sum()
+
+# display the now of rows with missing values in the 'Age' col
+df['Age'].isnull().sum()
+
+# display the rows of survived passengers
+df[df['Survived']==1]
+
+# display the no of passengers survived
+len(df[df['Survived']==1])
+
+# display the no of people dead
+len(df[df['Survived']==0])
+
+# take ony survived people data
+survived_df=df[df['Survived']==1]
+
+# take only dead people data
+dead_df=df[df['Survived']==0]
+
+# drop the rows where 'Age' column does not have any value
+df1=df['Age'].dropna()
+
+# display the names and ages of survived people
+df[['Name','Age']][df['Survived']==1]
+
+# display data frame with only numeric datatypes
+df1=df.select_dtypes(include=['float64','int64'])
+df1
+
+# draw distribution plot on 'Age'
+sns.displot(data=df,x='Age',bins=10,kde=True,color='red')
+
+# count the no of people survived using countplot
+sns.countplot(data=survived_df,x=survived_df['Sex']) # more females have survived than males
+
+# count the no of people survived in Pclass
+sns.countplot(data=survived_df,x=survived['Pclass'])
